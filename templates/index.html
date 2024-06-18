@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自動グラフプロットくん</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">自動グラフプロットくん</h1>
+        <div class="card">
+            <div class="card-body">
+                <form id="formulaForm">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="formula">数式を入力 (円周率は"PI()"):</label>
+                            <input type="text" id="formula" name="formula" class="form-control">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="dataFile">データファイルをインポート:</label>
+                            <input type="file" id="dataFile" name="dataFile" class="form-control">
+                            <button type="button" id="clearFileButton" class="btn btn-secondary mt-2">ファイルを取り消す</button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="chartType">グラフの種類:</label>
+                            <select id="chartType" name="chartType" class="form-control">
+                                <option value="line">折れ線グラフ</option>
+                                <option value="bar">棒グラフ</option>
+                                <option value="scatter">散布図</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <input type="checkbox" id="showPoints" name="showPoints">
+                            <label for="showPoints">プロット点を表示</label>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="color">線の色:</label>
+                            <input type="color" id="color" name="color" class="form-control" value="#4bc0c0">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="lineWidth">線の太さ:</label>
+                            <input type="number" id="lineWidth" name="lineWidth" class="form-control" value="2" min="1" max="10">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="xMin">X軸の最小値:</label>
+                            <input type="number" id="xMin" name="xMin" class="form-control" value="-10" step="0.01">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="xMax">X軸の最大値:</label>
+                            <input type="number" id="xMax" name="xMax" class="form-control" value="10" step="0.01">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="xStepSize">X軸の数字の間隔:</label>
+                            <input type="number" id="xStepSize" name="xStepSize" class="form-control" value="1" step="0.01">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="plotInterval">プロット点の間隔:</label>
+                            <input type="number" id="plotInterval" name="plotInterval" class="form-control" value="0.01" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="yMin">Y軸の最小値:</label>
+                            <input type="number" id="yMin" name="yMin" class="form-control" step="0.01">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="yMax">Y軸の最大値:</label>
+                            <input type="number" id="yMax" name="yMax" class="form-control" step="0.01">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="yStepSize">Y軸の数字の間隔:</label>
+                            <input type="number" id="yStepSize" name="yStepSize" class="form-control" value="1" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <input type="checkbox" id="showLabels" name="showLabels">
+                            <label for="showLabels">データラベルを表示</label>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="xLabel">X軸ラベル:</label>
+                            <input type="text" id="xLabel" name="xLabel" class="form-control" value="x">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="yLabel">Y軸ラベル:</label>
+                            <input type="text" id="yLabel" name="yLabel" class="form-control" value="y">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <input type="checkbox" id="showTitle" name="showTitle">
+                            <label for="showTitle">グラフタイトルを表示</label>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="chartTitle">グラフタイトル:</label>
+                            <input type="text" id="chartTitle" name="chartTitle" class="form-control" value="Fig.0　xとyの関係">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="titlePosition">タイトル位置:</label>
+                            <select id="titlePosition" name="titlePosition" class="form-control">
+                                <option value="top">上</option>
+                                <option value="bottom">下</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">グラフをプロット</button>
+                </form>
+                <button id="downloadButton" class="btn btn-secondary btn-block mt-2">グラフを画像としてダウンロード</button>
+            </div>
+        </div>
+        <canvas id="myChart" class="mt-4"></canvas>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
